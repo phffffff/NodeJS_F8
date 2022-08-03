@@ -1,27 +1,26 @@
-const express = require('express')
+const express = require('express');
 const morgan = require('morgan');
-const { engine } = require('express-handlebars');
+const router = require("./routes");
 const path = require("path")
-
-
-
+const configViewEngine = require("./configs/configViewEngine");
 const app = express()
 const port = 3000
+
+
 
 //set static public
 app.use(express.static(path.join(__dirname, "/public")))
 //HTTP logger
 app.use(morgan("dev"))
 //Engin
-
-app.engine('handlebars', engine());
-app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, "/resources/views"));
-
-app.get('/', (req, res) => {
-    res.render('home')
-})
-
+configViewEngine(app);
+//body-parse
+app.use(express.urlencoded({
+    extended: true
+}))
+app.use(express.json());
+//router
+router(app);
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
